@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="../etc/common.props" />
+  <Import Project="../etc/common.props"/>
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -11,22 +11,24 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="App.Metrics" Version="$(Example-App-Metrics-Version)" />
     <PackageReference Include="FSharp.Core" Version="$(Example-FSharp-Core-Version)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(Example-Microsoft-Extensions-Logging-Version)" />
-    <PackageReference Include="Polly" Version="$(Example-Polly-Version)" />
-    <PackageReference Include="RabbitMQ.Client" Version="$(Example-RabbitMQ-Client-Version)" />
     <PackageReference Include="example.serialisation" Version="$(Example-Serialisation-Version)" />
   </ItemGroup>
 
-  <ItemGroup>  
-    <ProjectReference Include="..\example.messaging.core\example.messaging.core.fsproj" />  
-  </ItemGroup>
-
   <ItemGroup>
-    <Compile Include="common.fs" />
-    <Compile Include="rabbitRecipient.fs" />
-    <Compile Include="rabbitMessaging.fs" />
-    
+    <Compile Include="recipients.fs" />
+    <Compile Include="error.fs" />
+    <Compile Include="body.fs" />
+    <Compile Include="interfaces.fs" />
+    <Compile Include="envelope.fs" />
+    <Compile Include="header.fs" />
+    <Compile Include="message.fs" />
+    <Compile Include="statistics.fs" />
+    <Compile Include="recipientBase.fs" />
+    <Compile Include="memoryRecipient.fs" />
+    <Compile Include="memoryMessaging.fs" />
   </ItemGroup>
 
 </Project>

@@ -1,34 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="../etc/common.props"/>
+  <Import Project="../etc/common.props" />
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+    <NuspecFile>example.messaging.nuspec</NuspecFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="$(Example-FSharp-Core-Version)" />
     <PackageReference Include="GitVersionTask" Version="$(Example-GitVersionTask-Version)">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="App.Metrics" Version="$(Example-App-Metrics-Version)" />
-    <PackageReference Include="FSharp.Core" Version="$(Example-FSharp-Core-Version)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(Example-Microsoft-Extensions-Logging-Version)" />
-    <PackageReference Include="example.serialisation" Version="$(Example-Serialisation-Version)" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="recipients.fs" />
-    <Compile Include="error.fs" />
-    <Compile Include="body.fs" />
-    <Compile Include="interfaces.fs" />
-    <Compile Include="envelope.fs" />
-    <Compile Include="header.fs" />
-    <Compile Include="message.fs" />
-    <Compile Include="statistics.fs" />
-    <Compile Include="recipientBase.fs" />
-    <Compile Include="memoryRecipient.fs" />
-    <Compile Include="memoryMessaging.fs" />
+    <ProjectReference Include="..\example.messaging.core\example.messaging.core.fsproj" />
+    <ProjectReference Include="..\example.messaging.rabbit\example.messaging.rabbit.fsproj" />
   </ItemGroup>
+  
+  <Target Name="UpdateNuspecProperties" AfterTargets="Build">
+    <PropertyGroup>
+      <NuspecProperties>version=$(GitVersion_FullSemVer)</NuspecProperties>
+    </PropertyGroup>
+  </Target>
 
+  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+    </ItemGroup>
+  </Target> 
+    
 </Project>
+

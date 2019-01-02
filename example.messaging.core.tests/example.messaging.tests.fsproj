@@ -42,7 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\example.messaging.rabbit\example.messaging.rabbit.fsproj" />
-    <ProjectReference Include="..\example.messaging\example.messaging.fsproj" />
+    <ProjectReference Include="..\example.messaging.core\example.messaging.core.fsproj" />
   </ItemGroup>
 
 </Project>

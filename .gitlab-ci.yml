@@ -23,5 +23,5 @@ publish:
   stage: publish
   script:    
     - ./etc/build/gitversion.sh
-    #- dotnet pack example.messaging -o /tmp/nupkgs
-    #- dotnet nuget push /tmp/nupkgs/* -k $MYGET_APIKEY -s $MYGET_URL
+    - dotnet pack example.messaging -o /tmp/nupkgs
+    - dotnet nuget push /tmp/nupkgs/* -k $MYGET_APIKEY -s $MYGET_URL
