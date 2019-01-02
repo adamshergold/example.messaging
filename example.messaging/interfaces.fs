@@ -28,7 +28,7 @@ type ReceiverId = string
 type Receiver = {
     ReceiverId : ReceiverId
     Subject : string option
-    OnHandler : IMessage -> ( Recipients * IMessage ) option
+    OnHandler : IMessage -> Async<(Recipients*IMessage) option>
 }
 with
     static member Make( id, subject, handler ) = 

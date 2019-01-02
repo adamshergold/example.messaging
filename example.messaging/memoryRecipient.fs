@@ -25,14 +25,19 @@ type MemoryRecipient( logger: ILogger option, label:string, id: RecipientId, mes
             this.Receivers
             |> Seq.map ( fun receiver ->
                 if receiver.Subject = message.Header.Subject then
-                 
-                    if logger.IsSome then 
-                        logger.Value.LogTrace( "MemoryRecipient::Deliver - Calling onHandler for {ReceiverId}", receiver.ReceiverId ) 
-
-                    receiver.OnHandler message  
+                     Some receiver
                 else
-                    None )
+                     None )
             |> Seq.choose ( fun x -> x )
+            |> Seq.map ( fun receiver ->
+                if logger.IsSome then 
+                    logger.Value.LogTrace( "MemoryRecipient::Deliver - Calling onHandler for {ReceiverId}", receiver.ReceiverId ) 
+
+                receiver.OnHandler message )
+            |> Async.Parallel
+            |> Async.RunSynchronously
+            |> Seq.choose ( fun x -> x )
+            
              
         replies 
         |> Seq.iter ( fun (recipients,message) ->  

@@ -41,6 +41,11 @@ type MessagingShould( oh: ITestOutputHelper ) =
     let serialiser = 
         Helpers.DefaultSerde 
         
+    let noReply msg =
+        async {
+            return None
+        }
+        
     static member Memory (serialiser:ISerde) (logger:ILogger) = 
     
         let options = 
@@ -77,7 +82,7 @@ type MessagingShould( oh: ITestOutputHelper ) =
         use broadcaster =
             sut.CreateRecipient "worker" "broadcaster" 
 
-        broadcaster.AddReceiver <| Receiver.Make( "broadcaster", None, (fun msg -> None) ) |> ignore
+        broadcaster.AddReceiver <| Receiver.Make( "broadcaster", None, noReply ) |> ignore
         
         
         // setup receivers 
@@ -85,12 +90,12 @@ type MessagingShould( oh: ITestOutputHelper ) =
         use receiver1 = 
             sut.CreateRecipient "worker" "receiver1"
             
-        receiver1.AddReceiver <| Receiver.Make( "receiver1", None, (fun msg -> None) ) |> ignore 
+        receiver1.AddReceiver <| Receiver.Make( "receiver1", None, noReply ) |> ignore 
 
         use receiver2 = 
             sut.CreateRecipient "worker" "receiver2"
             
-        receiver2.AddReceiver <| Receiver.Make( "receiver2", None, (fun msg -> None) ) |> ignore 
+        receiver2.AddReceiver <| Receiver.Make( "receiver2", None, noReply ) |> ignore 
         
         let message =
                         
@@ -128,7 +133,7 @@ type MessagingShould( oh: ITestOutputHelper ) =
         use sender =
             sut.CreateRecipient "worker" "sender"
 
-        sender.AddReceiver <| Receiver.Make( "sender", None, (fun msg -> None) ) |> ignore
+        sender.AddReceiver <| Receiver.Make( "sender", None, noReply ) |> ignore
         
         // setup receiver 
         
@@ -136,7 +141,7 @@ type MessagingShould( oh: ITestOutputHelper ) =
             sut.CreateRecipient "worker" "receiver"
             
         let receiverOnReply (msg:IMessage) =
-            None
+            async { return None }
             
         receiver.AddReceiver <| Receiver.Make( "receiver", None, receiverOnReply ) |> ignore 
         
@@ -183,7 +188,7 @@ type MessagingShould( oh: ITestOutputHelper ) =
         use sender =
             sut.CreateRecipient "worker" "sender"
 
-        sender.AddReceiver <| Receiver.Make( "sender-receiver", None, (fun msg -> None) ) |> ignore
+        sender.AddReceiver <| Receiver.Make( "sender-receiver", None, noReply ) |> ignore
         
         // setup receiver 
         
@@ -192,18 +197,19 @@ type MessagingShould( oh: ITestOutputHelper ) =
             
         let receiverOnReply (msg:IMessage) =
         
-            let replyTo= 
-                msg.Header.ReplyTo 
-
-            if replyTo.IsSome then
-                             
-                let replyMessage = 
-                    Message.Make( Body.Content( Mocks.Empty.Example() ) )
+            async {
+                let replyTo= 
+                    msg.Header.ReplyTo 
+    
+                if replyTo.IsSome then
+                                 
+                    let replyMessage = 
+                        Message.Make( Body.Content( Mocks.Empty.Example() ) )
+                            
                         
-                    
-                Some <| ( Recipients.ToOne( replyTo.Value ), replyMessage )
-            else 
-                None 
+                    return Some <| ( Recipients.ToOne( replyTo.Value ), replyMessage )
+                else 
+                    return None } 
             
         receiver.AddReceiver <| Receiver.Make( "receiver-receiver", None, receiverOnReply ) |> ignore 
         
@@ -241,25 +247,26 @@ type MessagingShould( oh: ITestOutputHelper ) =
         use sender =
             messaging.CreateRecipient "client" "sender"
 
-        sender.AddReceiver <| Receiver.Make( "sender", None, (fun msg -> None) ) |> ignore
+        sender.AddReceiver <| Receiver.Make( "sender", None, noReply ) |> ignore
         
 
         let receiverOnReply (msg:IMessage) =
         
-            logger.LogInformation( "receiverOnReply {Message}", msg )
-            
-            let replyTo= 
-                msg.Header.ReplyTo 
-
-            if replyTo.IsSome then
-                             
-                let replyMessage = 
-                    Message.Make( Body.Content( Mocks.Empty.Example() ) )
+            async {
+                logger.LogInformation( "receiverOnReply {Message}", msg )
+                
+                let replyTo= 
+                    msg.Header.ReplyTo 
+    
+                if replyTo.IsSome then
+                                 
+                    let replyMessage = 
+                        Message.Make( Body.Content( Mocks.Empty.Example() ) )
+                            
                         
-                    
-                Some <| ( Recipients.ToOne( replyTo.Value ), replyMessage )
-            else 
-                None 
+                    return Some <| ( Recipients.ToOne( replyTo.Value ), replyMessage )
+                else 
+                    return None } 
             
         let nReceivers = 3
         

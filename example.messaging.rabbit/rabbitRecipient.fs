@@ -152,15 +152,21 @@ type RabbitRecipient( serialiser: ISerde, options: RabbitRecipientOptions ) as t
             this.Receivers 
             |> Seq.map ( fun receiver ->
                 if receiver.Subject = message.Header.Subject then 
-                
-                    if this.Logger.IsSome then 
-                        this.Logger.Value.LogTrace( "RabbitRecipient::Deliver - RecipientId {RecipientId} Calling OnHandler ReceiverId {ReceiverId}", this.RecipientId, receiver.ReceiverId )
-                
-                    receiver.OnHandler message  
+                    Some receiver 
                 else
                     None )
             |> Seq.choose ( fun x -> x )
-             
+            |> Seq.map ( fun receiver ->
+        
+                if this.Logger.IsSome then 
+                    this.Logger.Value.LogTrace( "RabbitRecipient::Deliver - RecipientId {RecipientId} Calling OnHandler ReceiverId {ReceiverId}", this.RecipientId, receiver.ReceiverId )
+            
+                receiver.OnHandler message )
+            |> Async.Parallel
+            |> Async.RunSynchronously
+            |> Seq.choose ( fun x -> x )
+
+                             
         replies 
         |> Seq.iter ( fun (recipients,message) ->  
         
