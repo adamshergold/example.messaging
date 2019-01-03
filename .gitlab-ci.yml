@@ -9,6 +9,7 @@ build-test-publish:
   stage: build-test-publish 
   script:
     - ./etc/build/gitversion.sh
+    - ./etc/build/zip.sh
     - dotnet build example.messaging.sln
     - curl -s https://codecov.io/bash > codecov
     - chmod +x codecov
