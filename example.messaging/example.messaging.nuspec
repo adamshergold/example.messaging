@@ -8,7 +8,7 @@
     <dependencies>
       <dependency id="Newtonsoft.Json" version="12.0.1"/>
       <dependency id="Microsoft.Extensions.Logging" version="2.2.0"/>
-      <dependency id="example.serialisation" version="$example-serialisation$"/>
+      <dependency id="example.serialisation" version="$serialisation$"/>
     </dependencies>  
   </metadata>
   <files>
