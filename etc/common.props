@@ -2,7 +2,7 @@
 <Project>
 
     <PropertyGroup>
-        <Example-Serialisation-Major>1</Example-Serialisation-Major>
+        <Example-Serialisation-Major>1</Example-Serialisation-Major> 
         <Example-Serialisation-Minor>0</Example-Serialisation-Minor>
     </PropertyGroup>
 
