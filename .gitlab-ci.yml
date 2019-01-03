@@ -15,7 +15,8 @@ build-test-publish:
     - dotnet test example.messaging.core.tests /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     - ./codecov -f example.messaging.core.tests/coverage.opencover.xml -t $CODECOV_TOKEN
     - dotnet pack example.messaging -o /tmp/nupkgs
-    - dotnet nuget push /tmp/nupkgs/* -k $MYGET_APIKEY -s $MYGET_URL
+    - example.messaging/repack.sh /tmp/nupkgs /tmp/nupkgs.repack
+    - dotnet nuget push /tmp/nupkgs.repack/* -k $MYGET_APIKEY -s $MYGET_URL
 
 # build:
 #   stage: build
