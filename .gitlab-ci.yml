@@ -1,27 +1,40 @@
 image: microsoft/dotnet:2.2-sdk 
 stages:
-  - build
-  - test
-  - publish
+  # - build
+  # - test
+  # - publish
+  - build-test-publish
 
-build:
-  stage: build
+build-test-publish:
+  stage: build-test-publish 
   script:
     - ./etc/build/gitversion.sh
     - dotnet build example.messaging.sln
-
-test:
-  stage: test
-  script:
-    - ./etc/build/gitversion.sh
     - curl -s https://codecov.io/bash > codecov
     - chmod +x codecov
     - dotnet test example.messaging.core.tests /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     - ./codecov -f example.messaging.core.tests/coverage.opencover.xml -t $CODECOV_TOKEN
-
-publish:
-  stage: publish
-  script:    
-    - ./etc/build/gitversion.sh
     - dotnet pack example.messaging -o /tmp/nupkgs
     - dotnet nuget push /tmp/nupkgs/* -k $MYGET_APIKEY -s $MYGET_URL
+
+# build:
+#   stage: build
+#   script:
+#     - ./etc/build/gitversion.sh
+#     - dotnet build example.messaging.sln
+
+# test:
+#   stage: test
+#   script:
+#     - ./etc/build/gitversion.sh
+#     - curl -s https://codecov.io/bash > codecov
+#     - chmod +x codecov
+#     - dotnet test example.messaging.core.tests /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+#     - ./codecov -f example.messaging.core.tests/coverage.opencover.xml -t $CODECOV_TOKEN
+
+# publish:
+#   stage: publish
+#   script:    
+#     - ./etc/build/gitversion.sh
+#     - dotnet pack example.messaging -o /tmp/nupkgs
+#     - dotnet nuget push /tmp/nupkgs/* -k $MYGET_APIKEY -s $MYGET_URL

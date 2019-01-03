@@ -2,6 +2,35 @@
 <Project>
 
     <PropertyGroup>
+        <Example-Serialisation-Major>1</Example-Serialisation-Major>
+        <Example-Serialisation-Minor>0</Example-Serialisation-Minor>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Example-Branch Condition=" '$(CI_COMMIT_REF_NAME)' == 'master' ">master</Example-Branch>
+        <Example-Branch Condition=" '$(CI_COMMIT_REF_NAME)' == 'develop' Or '$(CI_COMMIT_REF_NAME)' == ''">develop</Example-Branch>
+        <Example-Branch Condition=" $(CI_COMMIT_REF_NAME.Contains( 'release' )) ">release</Example-Branch>
+    </PropertyGroup>
+
+    <Choose>
+        <When Condition=" '$(Example-Branch)' == 'master' ">
+            <PropertyGroup>
+                <Example-Serialisation-Version>$(Example-Serialisation-Major).$(Example-Serialisation-Minor).0</Example-Serialisation-Version>
+            </PropertyGroup>
+        </When>
+        <When Condition=" '$(Example-Branch)' == 'release' ">
+            <PropertyGroup>
+                <Example-Serialisation-Version>$(Example-Serialisation-Major).$([MSBuild]::Add($(Example-Serialisation-Minor), 1)).0-*</Example-Serialisation-Version>
+            </PropertyGroup>
+        </When>
+        <Otherwise>
+            <PropertyGroup>
+                <Example-Serialisation-Version>$(Example-Serialisation-Major).$([MSBuild]::Add($(Example-Serialisation-Minor), 1)).0-*</Example-Serialisation-Version>
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>   
+
+    <PropertyGroup>
 
         <Example-FSharp-Core-Version>4.5.4</Example-FSharp-Core-Version>
 
@@ -25,8 +54,6 @@
         <Example-Polly-Version>6.1.2</Example-Polly-Version>
         
         <Example-App-Metrics-Version>3.0.0</Example-App-Metrics-Version>
-
-        <Example-Serialisation-Version>1.0.0-*</Example-Serialisation-Version>
 
     </PropertyGroup>
 </Project>
