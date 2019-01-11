@@ -28,19 +28,23 @@ type Message( correlationId: string option, header: IHeader, body: Body ) =
         new Message( None, header, body ) :> IMessage
     
     interface ITypeSerialisable
-        with 
-            member this.Type 
-                with get () = typeof<Message> 
+          
+    override this.GetHashCode () =
+        hash (this.CorrelationId, this.Header, this.Body )
+        
+    override this.Equals (other:obj) =
+        match other with
+        | :? Message as other ->
+            other.CorrelationId= this.CorrelationId && other.Header = this.Header  && other.Body.Equals( this.Body )
+        | _ ->
+            failwithf "Cannot check equality between Header and '%O'" (other.GetType())
                     
     static member Serialiser 
         with get () =   
-            { new ITypeSerialiser<Message> 
+            { new ITypeSerde<Message> 
                 with 
                     member this.TypeName =
                         "__message"
-
-                    member this.Type 
-                        with get () = typeof<Message> 
                         
                     member this.ContentType = 
                         "binary" 

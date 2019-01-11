@@ -66,16 +66,16 @@ type RabbitMessaging( serialiser: ISerde, options: RabbitMessagingOptions ) =
             channel.CreateBasicProperties()
             
         let typeSerialiser = 
-            serialiser.TryLookupBySystemType (Some options.ContentType,envelope.Type)
+            serialiser.TrySerdeBySystemType (options.ContentType,envelope.GetType())
 
         if typeSerialiser.IsNone then 
-            failwithf "Unable to find serialiser for [%O] / [%s]" envelope.Type options.ContentType 
+            failwithf "Unable to find serialiser for [%O] / [%s]" (envelope.GetType()) options.ContentType 
                                 
         properties.Type <- typeSerialiser.Value.TypeName 
         properties.ContentType <- options.ContentType
         
         let bytes = 
-            Helpers.Serialise serialiser (Some options.ContentType) envelope 
+            Helpers.Serialise serialiser (options.ContentType) envelope 
             
         match envelope.Recipients with 
         | Recipients.ToAll(label) ->     

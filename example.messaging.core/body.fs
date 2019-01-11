@@ -9,24 +9,18 @@ type Body =
 
     override this.ToString() = 
         match this with 
-        | Content(ts) -> sprintf "Body(Content(%s))" (ts.Type.Name)
+        | Content(ts) -> sprintf "Body(Content(%O))" (ts.GetType())
         | Error(e) -> sprintf "Body(Error(%s))" (e.ToString())
         
     interface ITypeSerialisable
-        with 
-            member this.Type 
-                with get () = typeof<Body> 
     
     static member Serialiser 
         with get () =   
-            { new ITypeSerialiser<Body> 
+            { new ITypeSerde<Body> 
                 with 
                     member this.TypeName =
                         "__body"
 
-                    member this.Type 
-                        with get () = typeof<Body> 
-                        
                     member this.ContentType = 
                         "binary" 
                                                     
@@ -42,11 +36,11 @@ type Body =
                             let tw = 
                                 Helpers.Wrap serialiser ts [ "binary"; "json" ] 
 
-                            bs.Write( tw.ContentType.IsSome )
-                            if tw.ContentType.IsSome then 
-                                bs.Write( tw.ContentType.Value )
+                            bs.Write( tw.ContentType )
                                 
-                            bs.Write( tw.TypeName )
+                            bs.Write( tw.TypeName.IsSome )
+                            if tw.TypeName.IsSome then
+                                bs.Write( tw.TypeName.Value )
                             
                             bs.Write( (int32) tw.Body.Length )
                             bs.Write( tw.Body )
@@ -64,10 +58,10 @@ type Body =
                         | _ as v when v = "Content" ->
                         
                             let contentType = 
-                                if bds.ReadBool() then Some( bds.ReadString() ) else None
+                                bds.ReadString() 
                                  
                             let typeName = 
-                                bds.ReadString()
+                                if bds.ReadBool() then Some( bds.ReadString() ) else None
                                 
                             let body = 
                                 bds.ReadBytes( bds.ReadInt32() )

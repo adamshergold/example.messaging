@@ -17,18 +17,13 @@ module Mocks =
             Empty.Make() 
             
         interface ITypeSerialisable
-            with 
-                member this.Type with get () = typeof<Empty>
 
         static member JSONSerialiser 
             with get () = 
-                { new ITypeSerialiser<Empty>
+                { new ITypeSerde<Empty>
                     with
                         member this.TypeName =
                             "Empty"
-        
-                        member this.Type
-                            with get () = typeof<Empty>
         
                         member this.ContentType
                             with get () = "json"
@@ -55,14 +50,11 @@ module Mocks =
                             
         static member Serialiser 
             with get () =   
-                { new ITypeSerialiser<Empty> 
+                { new ITypeSerde<Empty> 
                     with 
                         member this.TypeName =
                             "Empty"
                 
-                        member this.Type 
-                            with get () = typeof<Empty> 
-                           
                         member this.ContentType = 
                             "binary" 
                                                        
@@ -93,18 +85,13 @@ module Mocks =
             }
         
         interface ITypeSerialisable
-            with 
-                member this.Type with get () = typeof<Person>
 
         static member JSONSerialiser 
             with get () = 
-                { new ITypeSerialiser<Person>
+                { new ITypeSerde<Person>
                     with
                         member this.TypeName =
                             "Person"
-        
-                        member this.Type
-                            with get () = typeof<Person>
         
                         member this.ContentType
                             with get () = "json"
@@ -139,34 +126,4 @@ module Mocks =
         
                             result }
                         
-//        static member BinarySerialiser 
-//            with get () =   
-//                { new ITypeSerialiser<Person> 
-//                    with 
-//                        member this.TypeName =
-//                            "Person"
-//                
-//                        member this.Type 
-//                            with get () = typeof<Person> 
-//                           
-//                        member this.ContentType = 
-//                            "binary" 
-//                                                       
-//                        member this.Serialise (serialiser:ISerde) (s:ISerdeStream) (v:Person) =
-//                        
-//                            use bs = 
-//                                BinarySerialiser.Make( serialiser, s, this.TypeName, Some this.ContentType )
-//                            
-//                            bs.Write(v.Name)
-//                        
-//                        member this.Deserialise (serialiser:ISerde) (s:ISerdeStream) =
-//                        
-//                            use bds = 
-//                                BinaryDeserialiser.Make( serialiser, s, Some this.ContentType )
-//
-//                            bds.Start( this.TypeName )
-//                        
-//                            let name = 
-//                                bds.ReadString()
-//                        
-//                            Person.Make( name ) }             
+        

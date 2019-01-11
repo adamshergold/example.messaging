@@ -26,7 +26,9 @@ type BodyShould( oh: ITestOutputHelper ) =
             let v = Error.Make( "Foo", true ) 
             Body.Error( v ) 
                     
-        Helpers.RoundTrip serialiser sut    
+        let rt = Helpers.RoundTrip serialiser "binary" sut
+        
+        Assert.Equal( rt, sut )
               
     [<Fact>]
     member this.``CanSerialise-Content`` () = 
@@ -38,4 +40,6 @@ type BodyShould( oh: ITestOutputHelper ) =
             let v = Mocks.Person.Make( "John Smith" ) 
             Body.Content( v ) 
                     
-        Helpers.RoundTrip serialiser sut      
+        let rt = Helpers.RoundTrip serialiser "binary" sut
+        
+        Assert.Equal( rt, sut )      

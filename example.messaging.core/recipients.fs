@@ -18,20 +18,14 @@ with
         sprintf "Recipient(%s,%s)" this.Id (match this.Description with | Some v -> v | None -> "-")
         
     interface ITypeSerialisable
-        with 
-            member this.Type 
-                with get () = typeof<RecipientId> 
-                    
+             
     static member Serialiser 
         with get () =   
-            { new ITypeSerialiser<RecipientId> 
+            { new ITypeSerde<RecipientId> 
                 with 
                     member this.TypeName =
                         "__recipient"
 
-                    member this.Type 
-                        with get () = typeof<RecipientId> 
-                        
                     member this.ContentType = 
                         "binary" 
                                                     
@@ -67,19 +61,13 @@ type Recipients =
     | ToOne of RecipientId
 
     interface ITypeSerialisable
-        with 
-            member this.Type 
-                with get () = typeof<Recipients> 
                     
     static member Serialiser 
         with get () =   
-            { new ITypeSerialiser<Recipients> 
+            { new ITypeSerde<Recipients> 
                 with 
                     member this.TypeName =
                         "__recipients"
-
-                    member this.Type 
-                        with get () = typeof<Recipients> 
                         
                     member this.ContentType = 
                         "binary" 

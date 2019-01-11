@@ -87,7 +87,7 @@ type RabbitRecipient( serialiser: ISerde, options: RabbitRecipientOptions ) as t
         if this.Logger.IsSome then 
             this.Logger.Value.LogTrace( "RabbitRecipient::OnReceivedImpl - RecipientId {RecipientId} {ContentType} {TypeName}", this.RecipientId, contentType, typeName )
     
-        match Helpers.Deserialise this.Serialiser (Some contentType) typeName args.Body with 
+        match Helpers.Deserialise this.Serialiser contentType typeName args.Body with 
         | :? IEnvelope as e ->
         
             if this.Logger.IsSome then 

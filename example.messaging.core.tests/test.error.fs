@@ -37,4 +37,7 @@ type ErrorShould( oh: ITestOutputHelper ) =
             
         let sut = Error.Make( "oops!", false ) 
                     
-        Helpers.RoundTrip serialiser sut      
+        let rt =
+            Helpers.RoundTrip serialiser "binary" sut
+            
+        Assert.Equal( rt, sut )      
