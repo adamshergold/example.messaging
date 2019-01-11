@@ -36,14 +36,17 @@ type EnvelopeShould( oh: ITestOutputHelper ) =
         Assert.Equal( "theSubject", sut.Message.Header.Subject.Value )
         Assert.Equal( Recipients.ToAll(None), sut.Recipients )
         
-    [<Fact>]
-    member this.``CanSerialise`` () = 
+    [<Theory>]
+    [<InlineData("binary")>]
+    member this.``CanSerialise`` (contentType:string) = 
     
         let serialiser = 
             Helpers.DefaultSerde 
             
         let sut = sut() 
                     
-        Helpers.RoundTrip serialiser sut 
+        let rt = Helpers.RoundTrip serialiser contentType sut
+        
+        Assert.Equal( rt, sut )
                      
      

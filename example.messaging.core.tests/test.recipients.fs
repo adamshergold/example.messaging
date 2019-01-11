@@ -18,7 +18,9 @@ type RecipientsShould( oh: ITestOutputHelper ) =
         let sut = 
             Recipients.ToAll(None)
                     
-        Helpers.RoundTrip serialiser sut 
+        let rt = Helpers.RoundTrip serialiser "binary" sut
+        
+        Assert.Equal( rt, sut )
                      
 
     [<Fact>]
@@ -30,9 +32,10 @@ type RecipientsShould( oh: ITestOutputHelper ) =
         let sut = 
             Recipients.ToAny( Some "label" )
                     
-        Helpers.RoundTrip serialiser sut 
+        let rt = Helpers.RoundTrip serialiser "binary" sut 
      
-     
+        Assert.Equal( rt, sut )
+        
     [<Fact>]
     member this.``CanSerialise-ToOne`` () = 
     
@@ -42,5 +45,6 @@ type RecipientsShould( oh: ITestOutputHelper ) =
         let sut = 
             Recipients.ToOne( RecipientId.Make( "123") )
                     
-        Helpers.RoundTrip serialiser sut 
-     
+        let rt = Helpers.RoundTrip serialiser "binary" sut 
+        
+        Assert.Equal( rt, sut )

@@ -18,19 +18,23 @@ type Header( subject: string option, replyTo: RecipientId option ) =
         new Header( subject, replyTo ) :> IHeader
     
     interface ITypeSerialisable
-        with 
-            member this.Type 
-                with get () = typeof<Header> 
+                
+    override this.GetHashCode () =
+        hash (this.Subject, this.ReplyTo )
+        
+    override this.Equals (other:obj) =
+        match other with
+        | :? Header as other ->
+            other.Subject.Equals( this.Subject ) && other.ReplyTo.Equals( this.ReplyTo )
+        | _ ->
+            failwithf "Cannot check equality between Header and '%O'" (other.GetType())
                     
     static member Serialiser 
         with get () =   
-            { new ITypeSerialiser<Header> 
+            { new ITypeSerde<Header> 
                 with 
                     member this.TypeName =
                         "__header"
-
-                    member this.Type 
-                        with get () = typeof<Header> 
                         
                     member this.ContentType = 
                         "binary" 

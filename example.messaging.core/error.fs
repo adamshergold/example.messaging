@@ -20,21 +20,25 @@ type Error( message:string, retryable: bool ) =
      
     override this.ToString() = 
         sprintf "Message=%s Retryable=%b" message retryable
-             
+
+    override this.GetHashCode () =
+        hash (this.Message, this.Retryable )
+        
+    override this.Equals (other:obj) =
+        match other with
+        | :? Error as other ->
+            other.Message.Equals( this.Message ) && other.Retryable = this.Retryable
+        | _ ->
+            failwithf "Cannot check equality between Error and '%O'" (other.GetType())
+            
     interface ITypeSerialisable
-        with 
-            member this.Type 
-                with get () = typeof<Error> 
         
     static member Serialiser 
         with get () =   
-            { new ITypeSerialiser<Error> 
+            { new ITypeSerde<Error> 
                 with 
                     member this.TypeName =
                         "__error"
-
-                    member this.Type 
-                        with get () = typeof<Error> 
                         
                     member this.ContentType = 
                         "binary" 

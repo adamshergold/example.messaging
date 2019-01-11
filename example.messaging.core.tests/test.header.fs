@@ -33,7 +33,9 @@ type HeaderShould( oh: ITestOutputHelper ) =
         let sut = 
             Header.Make( Some subject, Some replyTo )
             
-        Helpers.RoundTrip serialiser sut 
+        let rt = Helpers.RoundTrip serialiser "binary" sut
+        
+        Assert.Equal( rt, sut )
          
                     
      

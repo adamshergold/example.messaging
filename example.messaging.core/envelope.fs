@@ -15,20 +15,24 @@ type Envelope( sender: RecipientId, recipients: Recipients, message:IMessage ) =
         new Envelope( sender, recipients, message ) :> IEnvelope
     
     interface ITypeSerialisable
-        with 
-            member this.Type 
-                with get () = typeof<Envelope> 
-                    
+
+    override this.GetHashCode () =
+        hash (this.Sender, this.Recipients, this.Message )
+        
+    override this.Equals (other:obj) =
+        match other with
+        | :? Envelope as other ->
+            other.Sender.Equals( this.Sender ) && other.Recipients.Equals( this.Recipients ) && other.Message.Equals( this.Message )
+        | _ ->
+            failwithf "Cannot check equality between Envelope and '%O'" (other.GetType())
+                        
     static member Serialiser 
         with get () =   
-            { new ITypeSerialiser<Envelope> 
+            { new ITypeSerde<Envelope> 
                 with 
                     member this.TypeName =
                         "__envelope"
 
-                    member this.Type 
-                        with get () = typeof<Envelope> 
-                        
                     member this.ContentType = 
                         "binary" 
                                                     

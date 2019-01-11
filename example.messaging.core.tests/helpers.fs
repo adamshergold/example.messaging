@@ -26,12 +26,18 @@ module Helpers =
     let DefaultSerde = 
         Serde() 
                 
-    let RoundTrip (serde:ISerde) (v:ITypeSerialisable) = 
+    let RoundTrip (serde:ISerde) (contentType:string) (v:ITypeSerialisable) = 
     
         let bytes = 
-            Example.Serialisation.Helpers.Serialise serde None v 
+            Example.Serialisation.Helpers.Serialise serde contentType v 
         
-        let typeName = 
-            serde.TypeName None v.Type 
+        let typeSerde =
+            serde.TrySerdeBySystemType (contentType,v.GetType())
+        
+        if typeSerde.IsNone then
+            failwithf "Unable to find TypeSerde!"
             
-        Example.Serialisation.Helpers.Deserialise serde None typeName bytes
+        let typeName =
+            typeSerde.Value.TypeName
+            
+        Example.Serialisation.Helpers.Deserialise serde contentType typeName bytes
